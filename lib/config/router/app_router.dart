@@ -13,8 +13,8 @@ final router = GoRouter(
       builder: (context, state) => const LoginScreen()
     ),
     GoRoute(
-      path: '/reset-password',
-      builder: (context, state) => const ResetPasswordScreen()
+      path: '/login-with-password',
+      builder: (context, state) => const LoginWithPasswordScreen()
     )
   ]
 );

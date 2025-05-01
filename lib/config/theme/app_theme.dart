@@ -9,14 +9,14 @@ class AppTheme {
   ColorScheme get lightThemeSchema {
     return const ColorScheme.light(
       brightness: Brightness.light,
-      primary: Color.fromARGB(255, 0, 91, 188),
+      primary: Color.fromARGB(255, 44, 98, 155),
       onPrimary: Color.fromARGB(255, 255, 255, 255),
-      secondary: Color.fromARGB(255, 245, 248, 250),
-      onSecondary: Color.fromARGB(255, 0, 66, 131),
-      error: Color(0xFFE0245E),
+      secondary: Color.fromARGB(255, 186, 114, 6),
+      onSecondary: Color.fromARGB(255, 255, 255, 255),
+      error: Color.fromARGB(255, 182, 61, 71),
       onError: Color(0xFFFFFFFF),
-      surface: Color.fromARGB(255, 255, 255, 255),
-      onSurface: Color.fromARGB(255, 255, 255, 255),
+      surface: Color.fromARGB(255, 239, 250, 255),
+      onSurface: Color.fromARGB(255, 97, 97, 97),
     );
   }
 
