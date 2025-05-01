@@ -1,0 +1,1 @@
+C:\Users\Fernando\Documents\mobile\flutter_template\build\app\intermediates\cxx\Debug\70y1fd4t\obj\arm64-v8a
