@@ -11,7 +11,7 @@ class AppTheme {
       brightness: Brightness.light,
       primary: Color.fromARGB(255, 25, 72, 121),
       onPrimary: Color.fromARGB(255, 255, 255, 255),
-      secondary: Color.fromARGB(255, 179, 125, 24),
+      secondary: Color.fromARGB(255, 36, 130, 188),
       onSecondary: Color.fromARGB(255, 255, 255, 255),
       error: Color.fromARGB(255, 182, 61, 71),
       onError: Color(0xFFFFFFFF),

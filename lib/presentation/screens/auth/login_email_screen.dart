@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_template/config/router/app_router.dart';
 import 'package:flutter_template/presentation/screens/index.dart';
+import 'package:flutter_template/presentation/providers/auth/login_providers.dart';
 
 class LoginEmailScreen extends ConsumerWidget {
 
@@ -12,8 +13,9 @@ class LoginEmailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    final colors = Theme.of(context).colorScheme;
     final router = ref.watch(appRouter);
+    final colors = Theme.of(context).colorScheme;
+    final loginEmailNotifier = ref.watch(loginEmailProvider.notifier);
 
     return Scaffold(
       body: SafeArea(
@@ -25,10 +27,12 @@ class LoginEmailScreen extends ConsumerWidget {
               const Text('Ingresa tu correo corporativo para acceder', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               TextField(
+                onChanged: loginEmailNotifier.onChanged,
                 style: TextStyle(fontSize: 30, color: colors.secondary, fontWeight: FontWeight.w600),
                 decoration: InputDecoration(
                   hintStyle: TextStyle(fontSize: 30, color: Colors.grey.shade400, fontWeight: FontWeight.w600),
                   hintText: 'example@aclara.mx',
+                  errorText: !ref.watch(isValidEmailProvider) ? 'No es un correo electronico valido' : null,
                   contentPadding: const EdgeInsets.all(8.0)
                 )
               )
@@ -39,13 +43,8 @@ class LoginEmailScreen extends ConsumerWidget {
       floatingActionButton: SizedBox(
         width: 60,
         height: 60,
-        child: IconButton(
-          style: ButtonStyle(
-            shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(40))),
-            backgroundColor: WidgetStatePropertyAll(colors.primary),
-            foregroundColor: WidgetStatePropertyAll(colors.onPrimary),
-          ),
-          onPressed:()=> router.pushNamed(LoginPasswordScreen.name), 
+        child: IconButton.filled(
+          onPressed: ref.watch(isValidEmailProvider) ? ()=> router.pushNamed(LoginPasswordScreen.name) : null, 
           icon: const Icon(Icons.arrow_forward_outlined, size: 28),
         ),
       )

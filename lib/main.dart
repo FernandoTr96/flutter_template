@@ -30,9 +30,12 @@ class MainApp extends ConsumerWidget {
 
     // configuraciones de la pp
     return MaterialApp.router(
+      routerConfig: router,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: AppTheme().lightThemeSchema
+      ),
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorScheme: AppTheme().lightThemeSchema),
-      routerConfig: router
     );
   }
 }
