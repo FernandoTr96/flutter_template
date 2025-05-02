@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_template/presentation/screens/index.dart';
 
 final appRouter = Provider((ref)=> GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/',
   routes: [
     GoRoute(
       path: '/',
+      name: HomeScreen.name,
       builder: (context, state) => const HomeScreen()
     ),
     GoRoute(
