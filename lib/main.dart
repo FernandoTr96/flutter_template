@@ -10,12 +10,14 @@ void main() async {
   runApp(const ProviderScope(child: MainApp()));
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
 
   const MainApp({super.key});
   
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final router = ref.watch(appRouter);
     
     // cambiar el color de iconos de barra de estado
     SystemChrome.setSystemUIOverlayStyle(
@@ -26,6 +28,7 @@ class MainApp extends StatelessWidget {
       ),
     );
 
+    // configuraciones de la pp
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(colorScheme: AppTheme().lightThemeSchema),

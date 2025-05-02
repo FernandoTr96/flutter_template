@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_template/config/router/app_router.dart';
+import 'package:flutter_template/presentation/screens/index.dart';
 
 class LoginScreen extends StatelessWidget {
   
@@ -71,15 +74,16 @@ class _Brand extends StatelessWidget {
   }
 }
 
-class _AuthButtons extends StatelessWidget {
+class _AuthButtons extends ConsumerWidget {
   
   const _AuthButtons();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
 
     final size = MediaQuery.of(context).size;
     final colors = Theme.of(context).colorScheme;
+    final router = ref.watch(appRouter);
 
     return SizedBox(
       width: double.infinity,          
@@ -106,7 +110,7 @@ class _AuthButtons extends StatelessWidget {
             SizedBox(
               width: size.width * 0.85,
               child: TextButton.icon(
-                onPressed: (){},
+                onPressed: () => router.pushNamed(LoginEmailScreen.name),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: colors.secondary,
                   padding: const EdgeInsets.all(13.0)

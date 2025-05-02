@@ -9,13 +9,13 @@ class AppTheme {
   ColorScheme get lightThemeSchema {
     return const ColorScheme.light(
       brightness: Brightness.light,
-      primary: Color.fromARGB(255, 44, 98, 155),
+      primary: Color.fromARGB(255, 25, 72, 121),
       onPrimary: Color.fromARGB(255, 255, 255, 255),
-      secondary: Color.fromARGB(255, 186, 114, 6),
+      secondary: Color.fromARGB(255, 179, 125, 24),
       onSecondary: Color.fromARGB(255, 255, 255, 255),
       error: Color.fromARGB(255, 182, 61, 71),
       onError: Color(0xFFFFFFFF),
-      surface: Color.fromARGB(255, 239, 250, 255),
+      surface: Color.fromARGB(255, 246, 252, 255),
       onSurface: Color.fromARGB(255, 97, 97, 97),
     );
   }
