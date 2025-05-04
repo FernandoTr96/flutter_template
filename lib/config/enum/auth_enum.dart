@@ -1,0 +1,1 @@
+enum AuthEnum { checking, authenticated, unauthenticated  }

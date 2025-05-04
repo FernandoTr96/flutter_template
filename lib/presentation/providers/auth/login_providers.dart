@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final loginErrorProvider = StateProvider<bool>((ref) => false);
+
 final obscurePasswordProvider = StateProvider<bool>((ref) => true);
 
 final loginEmailProvider = StateNotifierProvider<LoginFieldNotifier,String>((ref) {
