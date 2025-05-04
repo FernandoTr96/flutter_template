@@ -11,7 +11,7 @@ class TokenInterceptor extends Interceptor {
     try {
       
       final storage = StoragePlugin();
-      final String? refreshToken = await storage.read(Variables.refreshTokenKey);
+      final String? refreshToken = await storage.read(Variables.tokenKey);
       final String accessToken = refreshToken ?? '';
 
       if (accessToken.isNotEmpty) {
