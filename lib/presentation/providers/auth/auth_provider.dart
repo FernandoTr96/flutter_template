@@ -53,6 +53,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       final auth = await authRepository.login(email: effectiveEmail, password: password);
       await storage.write(Variables.tokenKey, auth.token);
       await storage.write(Variables.emailKey, auth.email);
+      await storage.write(Variables.passwordKey, password);
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);
 
     } on WrongCredentials {

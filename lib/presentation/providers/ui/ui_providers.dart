@@ -8,3 +8,5 @@ final languageProvider = StateProvider<String>((ref)=> 'es');
 final isDarkModeProvider = StateProvider<bool>((ref)=> false);
 // loading state for whole app 
 final appLoadingProvider = StateProvider<bool>((ref) => false);
+// call provider in classes
+final containerProvider = ProviderContainer();

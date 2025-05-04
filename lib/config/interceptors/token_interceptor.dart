@@ -11,13 +11,8 @@ class TokenInterceptor extends Interceptor {
     try {
       
       final storage = StoragePlugin();
-      final String? refreshToken = await storage.read(Variables.tokenKey);
-      final String accessToken = refreshToken ?? '';
-
-      if (accessToken.isNotEmpty) {
-        options.headers['Authorization'] = 'Bearer $accessToken';
-      }
-
+      final String? token = await storage.read(Variables.tokenKey);
+      options.headers['Authorization'] = 'Bearer $token';
       handler.next(options);
 
     } catch (e) {
