@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_template/presentation/screens/index.dart';
 
 final appRouter = Provider((ref)=> GoRouter(
-  initialLocation: '/',
+  initialLocation: '/auth-checking',
   routes: [
     GoRoute(
       path: '/',
@@ -24,6 +24,11 @@ final appRouter = Provider((ref)=> GoRouter(
       path: '/login-password',
       name: LoginPasswordScreen.name,
       builder: (context, state) => const LoginPasswordScreen()
+    ),
+    GoRoute(
+      path: '/auth-checking',
+      name: AuthCheckingScreen.name,
+      builder: (context, state) => const AuthCheckingScreen()
     )
   ]
 ));
