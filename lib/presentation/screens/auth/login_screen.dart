@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_template/config/router/app_router.dart';
+import 'package:flutter_template/presentation/providers/auth/login_providers.dart';
 import 'package:flutter_template/presentation/screens/index.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -56,9 +57,9 @@ class _Brand extends StatelessWidget {
                     const SizedBox(width: 20),
                     Row(
                       children: [
-                        Text('ECO-SUITE', style: TextStyle(fontSize: 23, color: colors.secondary, fontWeight: FontWeight.w500)),
+                        Text('APP', style: TextStyle(fontSize: 23, color: colors.secondary, fontWeight: FontWeight.w500)),
                         const SizedBox(width: 10),
-                        const Text('EMPLEADOS', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w500)),
+                        const Text('BOILERPLATE', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w500)),
                       ]
                     )
                   ]
@@ -110,18 +111,25 @@ class _AuthButtons extends ConsumerWidget {
             SizedBox(
               width: size.width * 0.85,
               child: TextButton.icon(
-                onPressed: () => router.pushNamed(LoginEmailScreen.name),
+                onPressed: () async {
+                  final hasEmailInStorage = await ref.read(hasLocalEmailProvider.future);
+                  hasEmailInStorage ? 
+                  router.pushNamed(LoginPasswordScreen.name) :
+                  router.pushNamed(LoginEmailScreen.name); 
+                },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: colors.secondary,
                   padding: const EdgeInsets.all(13.0)
                 ),
-                icon: const Icon(Icons.lock),
+                icon: ref.watch(hasLocalEmailProvider).isLoading ? 
+                CircularProgressIndicator(strokeWidth: 2, color: colors.onSecondary) : 
+                const Icon(Icons.lock),
                 label: const Text('Ingresar con contraseña')
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              'iessus sa de cv', 
+              'company s.a de c.v', 
               style: TextStyle(
                 color: colors.onSurface, 
                 fontSize: 12, 

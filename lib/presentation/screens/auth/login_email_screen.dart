@@ -32,7 +32,7 @@ class LoginEmailScreen extends ConsumerWidget {
                 decoration: InputDecoration(
                   hintStyle: TextStyle(fontSize: 30, color: Colors.grey.shade400, fontWeight: FontWeight.w600),
                   hintText: 'example@aclara.mx',
-                  errorText: !ref.watch(isValidEmailProvider) ? 'No es un correo electronico valido' : null,
+                  errorText: !ref.watch(isValidEmailProvider) ? 'Debe ser un correo electronico valido' : null,
                   contentPadding: const EdgeInsets.all(8.0)
                 )
               )

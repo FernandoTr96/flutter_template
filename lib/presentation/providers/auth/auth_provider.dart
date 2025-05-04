@@ -4,6 +4,7 @@ import 'package:flutter_template/config/plugins/index.dart';
 import 'package:flutter_template/domain/entities/auth.dart';
 import 'package:flutter_template/config/enum/auth_enum.dart';
 import 'package:flutter_template/config/const/variables.dart';
+import 'package:flutter_template/infraestructure/errors/custom_error.dart';
 import 'package:flutter_template/presentation/providers/index.dart';
 import 'package:flutter_template/infraestructure/repositories/auth_repository_impl.dart';
 import 'package:flutter_template/infraestructure/errors/auth_errors.dart';
@@ -28,7 +29,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   AuthStateNotifier({
     required this.authRepository,
     required this.storage
-  }): super(
+  }): 
+  super(
     AuthState(
       auth: null, 
       error: '',
@@ -38,16 +40,27 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
   signIn({required String email, required String password}) async {
     try {
-      state = state.copyWith(authStatus: AuthEnum.checking);
-      final auth = await authRepository.login(email: email, password: password);
+      
+      state = state.copyWith(authStatus: AuthEnum.checking, error: '');
+      final storedEmail = await storage.read(Variables.emailKey);
+      final String? effectiveEmail = email.isNotEmpty ? email : storedEmail;
+
+      if (effectiveEmail == null || effectiveEmail.isEmpty) {
+        state = state.copyWith(error: 'No se encontró un email válido para iniciar sesión.');
+        return;
+      }
+
+      final auth = await authRepository.login(email: effectiveEmail, password: password);
       await storage.write(Variables.tokenKey, auth.token);
+      await storage.write(Variables.emailKey, auth.email);
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);
+
     } on WrongCredentials {
       handleError(error: 'Correo o contraseña incorrecta');      
     } on TimeoutException {
       handleError(error: 'Intente mas tarde, el servidor ha tardado en responder');
     } catch(e){
-      handleError(error: 'Error desconocido');
+      handleError(error: (e as CustomError).message);
     }
   }
 
@@ -56,9 +69,14 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(authStatus: AuthEnum.checking);
       final auth = await authRepository.refresh();
       await storage.write(Variables.tokenKey, auth.token);
+      await storage.write(Variables.emailKey, auth.email);
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);    
     } on InvalidToken {
-      handleError(error: 'El token de acceso ya no es valido');
+      handleError(error: 'El token de acceso no es valido');
+    } on NoTokenInRequest {
+      handleError(error: 'No hay un token que validar');
+    }catch(e){
+      handleError(error: (e as CustomError).message);
     }
   }
 

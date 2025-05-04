@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_template/config/enum/auth_enum.dart';
 import 'package:flutter_template/config/router/app_router.dart';
+import 'package:flutter_template/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter_template/presentation/providers/auth/login_providers.dart';
 
 class LoginPasswordScreen extends ConsumerWidget {
@@ -14,8 +16,13 @@ class LoginPasswordScreen extends ConsumerWidget {
 
     final router = ref.watch(appRouter);
     final colors = Theme.of(context).colorScheme;
-    final loginPasswordNotifier = ref.watch(loginPasswordProvider.notifier);
+    final email = ref.watch(loginEmailProvider);
+    final password = ref.watch(loginPasswordProvider);
+    final authState = ref.watch(authStateProvider);
+    final authStateNotifier = ref.watch(authStateProvider.notifier);
+    final obscurePassword = ref.watch(obscurePasswordProvider);
     final obscurePasswordNotifier = ref.watch(obscurePasswordProvider.notifier);
+    final loginPasswordNotifier = ref.watch(loginPasswordProvider.notifier);
 
     return Scaffold(
       body: SafeArea(
@@ -37,17 +44,19 @@ class LoginPasswordScreen extends ConsumerWidget {
               TextField(
                 onChanged: loginPasswordNotifier.onChanged,
                 style: TextStyle(fontSize: 30, color: colors.secondary, fontWeight: FontWeight.w600),
-                obscureText: true,
+                obscureText: obscurePassword,
                 decoration: InputDecoration(
                   hintStyle: TextStyle(fontSize: 30, color: Colors.grey.shade400, fontWeight: FontWeight.w600),
                   hintText: 'contraseña',
                   contentPadding: const EdgeInsets.all(8.0),
                   suffixIcon: IconButton(
                     onPressed: () => obscurePasswordNotifier.state = !obscurePasswordNotifier.state, 
-                    icon: ref.watch(obscurePasswordProvider) ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility)
+                    icon: !obscurePassword ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility)
                   )
                 )
-              )
+              ),
+              const SizedBox(height: 20),
+              Text(authState.error, style: TextStyle(color: colors.error))
             ]
           )
         )
@@ -56,8 +65,16 @@ class LoginPasswordScreen extends ConsumerWidget {
         width: 60,
         height: 60,
         child: IconButton.filled(
-          onPressed: ref.watch(loginPasswordProvider).isNotEmpty ? (){} : null,
-          icon: const Icon(Icons.send, size: 28),
+          onPressed: authState.authStatus != AuthEnum.checking && password.isNotEmpty ? 
+          () async {
+            await authStateNotifier.signIn(
+              email: email, 
+              password: password
+            );
+          } : null,
+          icon: authState.authStatus == AuthEnum.checking ?  
+          CircularProgressIndicator(strokeWidth: 2, color: colors.primary)  : 
+          const Icon(Icons.send, size: 28),
         )
       )
     );
