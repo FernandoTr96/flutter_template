@@ -1,38 +1,33 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_template/config/plugins/index.dart';
 import 'package:flutter_template/domain/entities/auth.dart';
 import 'package:flutter_template/config/enum/auth_enum.dart';
+import 'package:flutter_template/config/const/variables.dart';
 import 'package:flutter_template/presentation/providers/index.dart';
+import 'package:flutter_template/infraestructure/repositories/auth_repository_impl.dart';
 import 'package:flutter_template/infraestructure/errors/auth_errors.dart';
 
 final authStateProvider = StateNotifierProvider<AuthStateNotifier,AuthState>((ref) {
   
-  final signInCallback = ref.watch(authRepositoryProvider).login;
-  final logoutCallback = ref.watch(authRepositoryProvider).logout;
-  final refreshCallback =  ref.watch(authRepositoryProvider).refresh;
+  final storage = StoragePlugin();
+  final authRepository = ref.watch(authRepositoryProvider);
   
   return AuthStateNotifier(
-    signInCallback: signInCallback,
-    logoutCallback: logoutCallback,
-    refreshCallback: refreshCallback
+    authRepository: authRepository,
+    storage: storage
   );
 
 });
 
-typedef SignInCallback = Future<Auth> Function({required String email, required String password});
-typedef LogoutCallback = Future<void> Function();
-typedef RefreshCallback = Future<Auth> Function();
-
 class AuthStateNotifier extends StateNotifier<AuthState> {
 
-  final SignInCallback signInCallback;
-  final LogoutCallback logoutCallback;
-  final RefreshCallback refreshCallback;
+  final StoragePlugin storage;
+  final AuthRepositoryImpl authRepository;
 
   AuthStateNotifier({
-    required this.signInCallback, 
-    required this.logoutCallback, 
-    required this.refreshCallback
+    required this.authRepository,
+    required this.storage
   }): super(
     AuthState(
       auth: null, 
@@ -43,7 +38,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
   signIn({required String email, required String password}) async {
     try {
-      final auth = await signInCallback(email: email, password: password);
+      final auth = await authRepository.login(email: email, password: password);
+      await storage.write(Variables.tokenKey, auth.token);
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);
     } on WrongCredentials {
       handleError(error: 'Correo o contraseña incorrecta');      
@@ -56,7 +52,8 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
   refresh() async {
     try {
-      final auth = await refreshCallback();
+      final auth = await authRepository.refresh();
+      await storage.write(Variables.tokenKey, auth.token);
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);    
     } on InvalidToken {
       handleError(error: 'El token de acceso ya no es valido');
@@ -64,7 +61,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   }
 
   logout() async {
-    await logoutCallback();
+    await authRepository.logout();
     handleError(error: '');
   }
 

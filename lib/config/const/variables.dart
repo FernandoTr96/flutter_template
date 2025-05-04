@@ -1,3 +1,3 @@
 class Variables {
-  static String refreshTokenKey =  '';
+  static String tokenKey =  'bearerTokenKey';
 }
