@@ -38,6 +38,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
   signIn({required String email, required String password}) async {
     try {
+      state = state.copyWith(authStatus: AuthEnum.checking);
       final auth = await authRepository.login(email: email, password: password);
       await storage.write(Variables.tokenKey, auth.token);
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);
@@ -52,6 +53,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
   refresh() async {
     try {
+      state = state.copyWith(authStatus: AuthEnum.checking);
       final auth = await authRepository.refresh();
       await storage.write(Variables.tokenKey, auth.token);
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);    
