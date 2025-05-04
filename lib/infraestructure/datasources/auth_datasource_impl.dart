@@ -1,10 +1,10 @@
-import 'package:flutter_template/config/plugins/index.dart';
 import 'package:flutter_template/domain/entities/auth.dart';
-import 'package:flutter_template/domain/datasources/auths_datasource.dart';
+import 'package:flutter_template/config/plugins/index.dart';
+import 'package:flutter_template/domain/datasources/auth_datasource.dart';
 import 'package:flutter_template/infraestructure/mappers/auth_mapper.dart';
 import 'package:flutter_template/infraestructure/models/auth_response.dart';
 
-class AuthDatasource implements AuthsDatasource {
+class AuthDatasourceImpl implements AuthDatasource {
 
   final http = HttpPlugin();
 

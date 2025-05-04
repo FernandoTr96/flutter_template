@@ -1,10 +1,10 @@
 import 'package:flutter_template/domain/entities/auth.dart';
-import 'package:flutter_template/domain/datasources/auths_datasource.dart';
-import 'package:flutter_template/domain/repositories/auths_repository.dart';
+import 'package:flutter_template/domain/datasources/auth_datasource.dart';
+import 'package:flutter_template/domain/repositories/auth_repository.dart';
 
-class AuthRepositoryImpl implements AuthsRepository{
+class AuthRepositoryImpl implements AuthRepository{
 
-  final AuthsDatasource _datasource;
+  final AuthDatasource _datasource;
 
   AuthRepositoryImpl(this._datasource);
 

@@ -1,6 +1,6 @@
 import 'package:flutter_template/domain/entities/auth.dart';
 
-abstract class AuthsRepository {
+abstract class AuthDatasource {
   Future<Auth> login({required String email, required String password});
   Future<void> logout();
   Future<Auth> refresh();
