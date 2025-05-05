@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_template/config/enum/auth_enum.dart';
 import 'package:flutter_template/config/router/app_router.dart';
 import 'package:flutter_template/presentation/providers/auth/auth_provider.dart';
 import 'package:flutter_template/presentation/providers/auth/login_providers.dart';
@@ -65,16 +64,14 @@ class LoginPasswordScreen extends ConsumerWidget {
         width: 60,
         height: 60,
         child: IconButton.filled(
-          onPressed: authState.authStatus != AuthEnum.checking && password.isNotEmpty ? 
+          onPressed: password.isNotEmpty ? 
           () async {
             await authStateNotifier.signIn(
               email: email, 
               password: password
             );
           } : null,
-          icon: authState.authStatus == AuthEnum.checking ?  
-          CircularProgressIndicator(strokeWidth: 2, color: colors.primary)  : 
-          const Icon(Icons.send, size: 28),
+          icon: const Icon(Icons.send, size: 28)
         )
       )
     );

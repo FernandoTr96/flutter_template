@@ -2,13 +2,13 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_template/config/enum/auth_enum.dart';
 import 'package:flutter_template/presentation/screens/index.dart';
-import 'package:flutter_template/presentation/providers/auth/login_providers.dart';
 import 'package:flutter_template/config/router/app_router_notifier.dart';
+import 'package:flutter_template/presentation/providers/auth/login_providers.dart';
 
 final appRouter = Provider((ref){
 
   final appRouterNotifier = ref.watch(appRouterNotifierProvider);
-  final localTokenFuture = ref.watch(hasLocalTokenProvider.future);
+  final hasBeenLogedFuture = ref.watch(hasBeenLogedProvider.future);
 
   return GoRouter(
     initialLocation: '/auth-checking',
@@ -43,18 +43,16 @@ final appRouter = Provider((ref){
     redirect: (context, state) async {
 
       final goingTo = state.matchedLocation; 
+      final hasBeenLoged = await hasBeenLogedFuture;
       final authStatus = appRouterNotifier.authStatus;
-      final hasTokenInStorage = await localTokenFuture;
-      
-      if(goingTo == '/auth-checking' && authStatus == AuthEnum.checking) return null;
-      
+
       if(authStatus == AuthEnum.authenticated){
-        if(goingTo == '/login' || goingTo == '/login-email' || goingTo == '/login-password') return '/';
+        if(goingTo == '/login' || goingTo == '/login-email' || goingTo == '/login-password' || goingTo == '/auth-checking') return '/';
       }
 
       if(authStatus == AuthEnum.unauthenticated){
-        if(goingTo == '/auth-checking' && !hasTokenInStorage) return '/login-email';
-        if(goingTo == '/auth-checking' && hasTokenInStorage) return '/login';
+        if(goingTo == '/login' || goingTo == '/login-email' || goingTo == '/login-password') return null;
+        return hasBeenLoged ? '/login' : '/login-email';
       }
 
       return null;

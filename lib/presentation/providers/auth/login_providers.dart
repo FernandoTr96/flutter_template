@@ -2,10 +2,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_template/config/const/index.dart';
 import 'package:flutter_template/config/plugins/index.dart';
 
+final storage = StoragePlugin();
+
 final hasLocalTokenProvider = FutureProvider<bool>((ref) async {
-  final storage = StoragePlugin();
   final token = await storage.read(Variables.tokenKey);
   return token != null && token.isNotEmpty;
+});
+
+final hasBeenLogedProvider = FutureProvider<bool>((ref) async {
+  final email = await storage.read(Variables.emailKey);
+  final password = await storage.read(Variables.passwordKey);
+  return email != null && password != null;
 });
 
 final hasLocalEmailProvider = FutureProvider<bool>((ref) async {

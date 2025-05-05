@@ -4,10 +4,10 @@ import 'package:flutter_template/config/plugins/index.dart';
 import 'package:flutter_template/domain/entities/auth.dart';
 import 'package:flutter_template/config/enum/auth_enum.dart';
 import 'package:flutter_template/config/const/variables.dart';
-import 'package:flutter_template/infraestructure/errors/custom_error.dart';
 import 'package:flutter_template/presentation/providers/index.dart';
-import 'package:flutter_template/infraestructure/repositories/auth_repository_impl.dart';
 import 'package:flutter_template/infraestructure/errors/auth_errors.dart';
+import 'package:flutter_template/infraestructure/errors/custom_error.dart';
+import 'package:flutter_template/infraestructure/repositories/auth_repository_impl.dart';
 
 final authStateProvider = StateNotifierProvider<AuthStateNotifier,AuthState>((ref) {
   
@@ -34,9 +34,11 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     AuthState(
       auth: null, 
       error: '',
-      authStatus: AuthEnum.unauthenticated
+      authStatus: AuthEnum.checking
     )
-  );
+  ){
+    Future.delayed(const Duration(milliseconds: 1000), () async => await refresh());
+  }
 
   signIn({required String email, required String password}) async {
     try {
@@ -57,11 +59,11 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);
 
     } on WrongCredentials {
-      handleError(error: 'Correo o contraseña incorrecta');      
+      logoutApp('Correo o contraseña incorrecta');      
     } on TimeoutException {
-      handleError(error: 'Intente mas tarde, el servidor ha tardado en responder');
+      logoutApp('Intente mas tarde, el servidor ha tardado en responder');
     } catch(e){
-      handleError(error: (e as CustomError).message);
+      logoutApp((e as CustomError).message);
     }
   }
 
@@ -70,42 +72,59 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(authStatus: AuthEnum.checking);
       final auth = await authRepository.refresh();
       await storage.write(Variables.tokenKey, auth.token);
-      await storage.write(Variables.emailKey, auth.email);
       state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);    
     } on InvalidToken {
-      handleError(error: 'El token de acceso no es valido');
+      await storage.delete(Variables.tokenKey);
+      logoutApp();
     } on NoTokenInRequest {
-      handleError(error: 'No hay un token que validar');
+      logoutApp();
     }catch(e){
-      handleError(error: (e as CustomError).message);
+      logoutApp((e as CustomError).message);
     }
   }
 
   signInWithBiometrics() async {
-    final storage = StoragePlugin();
+    
     final (isAuthenticated, message) = await BiometricPlugin.authenticate();
-    if (isAuthenticated) {
-      final String? email = await storage.read(Variables.emailKey);
-      final String? password = await storage.read(Variables.passwordKey);
-      signIn(email: email ?? '', password: password ?? '');
-    }
-    else{
-      handleError(error: message);
+
+    if(!isAuthenticated) return logoutApp(message);
+    
+    final String? email = await storage.read(Variables.emailKey);
+    final String? password = await storage.read(Variables.passwordKey);
+
+    try {
+      final auth = await authRepository.login(email: email ?? '', password: password ?? '');
+      await storage.write(Variables.tokenKey, auth.token);
+      state = state.copyWith(auth: auth, authStatus: AuthEnum.authenticated);
+    } on WrongCredentials {
+      await clearCredentials();
+      logoutApp('Tus credenciales han cambiado vuelve a iniciar sesion');      
+    } on TimeoutException {
+      logoutApp('Intente mas tarde, el servidor ha tardado en responder');
+    } catch(e){
+      logoutApp((e as CustomError).message);
     }
   }
 
   logout() async {
     await authRepository.logout();
-    handleError(error: '');
+    await storage.delete(Variables.tokenKey);
+    logoutApp();
   }
 
-  handleError({required String error}){
+  logoutApp([String? error = '']){
     state = state.copyWith(
       auth: null,
       error: error, 
       authStatus: AuthEnum.unauthenticated
     );
   }
+
+  clearCredentials() async {
+    await storage.delete(Variables.emailKey);
+    await storage.delete(Variables.passwordKey);
+  }
+
 }
 
 class AuthState {
