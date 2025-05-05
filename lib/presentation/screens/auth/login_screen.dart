@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_template/config/router/app_router.dart';
-import 'package:flutter_template/presentation/providers/auth/login_providers.dart';
+import 'package:flutter_template/presentation/providers/index.dart';
 import 'package:flutter_template/presentation/screens/index.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -25,16 +25,17 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-class _Brand extends StatelessWidget {
+class _Brand extends ConsumerWidget {
   
   const _Brand();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
 
     final size = MediaQuery.of(context).size;
     final textStyles = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
+    final authProvider = ref.watch(authStateProvider);
 
     return SizedBox(
       width: double.infinity,
@@ -65,7 +66,9 @@ class _Brand extends StatelessWidget {
                   ]
                 ),
                 const SizedBox(height: 20),
-                Text('Aplicación movil empresarial de uso exclusivo para empleados autorizados de la empresa.', style: textStyles.titleSmall, textAlign: TextAlign.justify)
+                Text('Aplicación movil empresarial de uso exclusivo para empleados autorizados de la empresa.', style: textStyles.titleSmall, textAlign: TextAlign.justify),
+                const SizedBox(height: 5),
+                Text(authProvider.error, style: TextStyle(color: colors.error), textAlign: TextAlign.start)
               ]
             )
           )
@@ -97,7 +100,9 @@ class _AuthButtons extends ConsumerWidget {
             SizedBox(
               width: size.width * 0.85,
               child: ElevatedButton.icon(
-                onPressed: (){},
+                onPressed: () async {
+                  await ref.read(authStateProvider.notifier).signInWithBiometrics();
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.primary,
                   foregroundColor: colors.onPrimary,

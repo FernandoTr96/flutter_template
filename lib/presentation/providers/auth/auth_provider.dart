@@ -81,6 +81,19 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  signInWithBiometrics() async {
+    final storage = StoragePlugin();
+    final (isAuthenticated, message) = await BiometricPlugin.authenticate();
+    if (isAuthenticated) {
+      final String? email = await storage.read(Variables.emailKey);
+      final String? password = await storage.read(Variables.passwordKey);
+      signIn(email: email ?? '', password: password ?? '');
+    }
+    else{
+      handleError(error: message);
+    }
+  }
+
   logout() async {
     await authRepository.logout();
     handleError(error: '');
